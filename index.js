@@ -43,6 +43,7 @@ async.map(depsIndex, getPackageReportData, function(err, results) {
 
 	if (results.length === 0) return console.log('nothing to do')
 
+
 	try {
 
 		for (var i = 0; i < results.length; i++) {
@@ -50,14 +51,16 @@ async.map(depsIndex, getPackageReportData, function(err, results) {
 			var finalData = {}
 
 			for (var x = 0; x < config.fields.length; x++) {
+				var fieldPrepend = ''
 				var fieldName = config.fields[x]
+				if (fieldName === 'comment') fieldPrepend = '@'
 
 				// create only fields specified by the config
-				finalData[fieldName] = packageData[fieldName]
+				finalData[fieldName] = fieldPrepend + packageData[fieldName]
 
 				// fill in defaults
 				if (!(fieldName in packageData)) {
-					finalData[fieldName] = config[fieldName].value	
+					finalData[fieldName] = config[fieldName].value
 				}
 			}
 
@@ -90,7 +93,7 @@ async.map(depsIndex, getPackageReportData, function(err, results) {
 				line.fill('-')
 				lines.push(line.toString())
 			}
-			
+
 			results.unshift(lines)
 			results.unshift(labels)
 
@@ -108,15 +111,15 @@ async.map(depsIndex, getPackageReportData, function(err, results) {
 	} catch (e) {
 		console.error(e.stack)
 		process.exit(1)
-	}	
+	}
 })
 
 /*
-	add all packages to a package index array. 
+	add all packages to a package index array.
 	maintaining uniqueness (crude methods)
 */
 function addAll(packages, packageIndex) {
-		
+
 	// iterate over packages and prepare urls before I call the registry
 	for (var p in packages) {
 		if(p.indexOf('@') === 0) {
@@ -127,5 +130,5 @@ function addAll(packages, packageIndex) {
 		if (packageIndex.indexOf(package) === -1) {
 			packageIndex.push(package)
 		}
-	}	
+	}
 }
